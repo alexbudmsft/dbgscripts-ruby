@@ -8,5 +8,10 @@ if tbl.entries_packed.value != 0
 end
 
 for i in 0...num_bins
-  bin = tbl.as.big.bins[i].type
+  bin = tbl.as.big.bins[i]
+  entry = bin
+  while entry.value != 0
+    DbgScript.execute_command("da #{entry.key.value.to_s(16)}")
+    entry = entry.next
+  end
 end
