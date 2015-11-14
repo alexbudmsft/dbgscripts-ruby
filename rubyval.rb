@@ -84,9 +84,9 @@ class RubyVal
       @val >> 1
     elsif t == NilClass
       nil
-    elsif t == FalseClass
+    elsif t == FalseClass or t == 'RUBY_T_FALSE'
       false
-    elsif t == TrueClass
+    elsif t == TrueClass or t == 'RUBY_T_TRUE'
       true
     elsif t == 'RUBY_T_ARRAY'
       RArray.new(rbasic)
