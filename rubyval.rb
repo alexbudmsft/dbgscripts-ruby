@@ -54,15 +54,27 @@ class RubyVal
   #
   def type
     if immediate?
-      return "Fixnum" if fixnum?
-      return "Float" if flonum?
-      return "true" if @val == Qtrue
-      return "Symbol" if static_sym?
+      return Fixnum if fixnum?
+      return Float if flonum?
+      return TrueClass if @val == Qtrue
+      return Symbol if static_sym?
       return "undef" if @val == Qundef
     elsif !test_true?
-      return "nil" if @val == Qnil
-      return "false" if @val == Qfalse
+      return NilClass if @val == Qnil
+      return FalseClass if @val == Qfalse
     end
     builtin_type
+  end
+
+  def value
+    t = type
+    # Can't use 'case' statement because that uses '===' which doesn't help for
+    # comparing classes.
+    #
+    if t == Fixnum
+      @val >> 1
+    else
+      "not implemented"
+    end
   end
 end

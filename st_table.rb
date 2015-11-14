@@ -16,7 +16,7 @@ for i in 0...num_bins
     puts DbgScript.read_string(entry.key.value)
     val = entry.record.value
     rbval = RubyVal.new(val)
-    puts "Raw VALUE: #{val}, Type: #{rbval.type}"
+    puts "Raw VALUE: #{val}, Type: #{rbval.type}, Value: #{rbval.value}"
     entry = entry.next
   end
 end
