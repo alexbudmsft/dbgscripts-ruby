@@ -1,1 +1,1 @@
-RUBYMOD = 'rubyprov_lockdown'
+RUBYMOD = 'rubyprov'

@@ -84,9 +84,55 @@ class RubyVal
       @val >> 1
     elsif t == 'RUBY_T_ARRAY'
       RArray.new(rbasic)
+    elsif t == 'RUBY_T_STRING'
+      RString.new(rbasic)
     else
       "not implemented"
     end
+  end
+end
+
+class RString
+  def initialize(rbasic)
+    @rbasic = rbasic
+    @str = DbgScript.create_typed_object(
+        "#{RUBYMOD}!RString", @rbasic.address)
+  end
+
+  def embedded?
+    no_embed_flag = RubyVal.fl_user_mask(1)
+    @rbasic.flags.value & no_embed_flag == 0
+  end
+
+  def size
+    embed_len_mask =
+      RubyVal.fl_user_mask(2) |
+      RubyVal.fl_user_mask(3) |
+      RubyVal.fl_user_mask(4) |
+      RubyVal.fl_user_mask(5) |
+      RubyVal.fl_user_mask(6)
+
+    embed_len_shift = RubyVal::FL_USHIFT + 2
+    flags = @rbasic.flags.value
+    if embedded?
+      (flags & embed_len_mask) >> embed_len_shift
+    else
+      @str.as.heap.len.value
+    end
+  end
+
+  # Obtain a ptr to the array.
+  #
+  def ptr
+    if embedded?
+      @str.as.ary
+    else
+      @str.as.heap.ptr.deref
+    end
+  end
+
+  def to_s
+    ptr.read_bytes(size)
   end
 end
 
@@ -136,6 +182,8 @@ class RArray
       #
       if val.class == RArray
         val = val.to_a
+      elsif val.class == RString
+        val = val.to_s
       end
       ary << val
     end

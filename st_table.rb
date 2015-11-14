@@ -20,7 +20,7 @@ for i in 0...num_bins
     puts "Raw VALUE: #{rec_val}, Type: #{rbval.type}, Value: #{val}"
     if val.class == RArray
       puts "Array"
-      puts val.to_a
+      puts val.to_a.inspect
     end
     entry = entry.next
   end
