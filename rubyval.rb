@@ -90,6 +90,19 @@ class RubyVal
       "not implemented"
     end
   end
+
+  # Transform to a native Ruby value.
+  #
+  def to_native
+    val = value
+    if val.class == RArray
+      val.to_a
+    elsif val.class == RString
+      val.to_s
+    else
+      val
+    end
+  end
 end
 
 class RString
@@ -177,14 +190,7 @@ class RArray
     for i in 0...size
       # Each element is itself a Ruby VALUE.
       #
-      val = RubyVal.new(p[i].value).value
-      # Recursively materialize nested arrays.
-      #
-      if val.class == RArray
-        val = val.to_a
-      elsif val.class == RString
-        val = val.to_s
-      end
+      val = RubyVal.new(p[i].value).to_native
       ary << val
     end
     ary
