@@ -1,3 +1,5 @@
+require_relative 'rubyval'
+
 MOD = "rubyprov_lockdown"
 ST_TABLE_TYPE = "#{MOD}!st_table"
 tbl = DbgScript.create_typed_object(ST_TABLE_TYPE, 0x000000000464b040)
@@ -11,7 +13,10 @@ for i in 0...num_bins
   bin = tbl.as.big.bins[i]
   entry = bin
   while entry.value != 0
-    DbgScript.execute_command("da #{entry.key.value.to_s(16)}")
+    puts DbgScript.read_string(entry.key.value)
+    val = entry.record.value
+    rbval = RubyVal.new(val)
+    puts "Raw VALUE: #{val}, Type: #{rbval.type}"
     entry = entry.next
   end
 end
