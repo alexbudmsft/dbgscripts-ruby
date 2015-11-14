@@ -82,6 +82,12 @@ class RubyVal
     #
     if t == Fixnum
       @val >> 1
+    elsif t == NilClass
+      nil
+    elsif t == FalseClass
+      false
+    elsif t == TrueClass
+      true
     elsif t == 'RUBY_T_ARRAY'
       RArray.new(rbasic)
     elsif t == 'RUBY_T_STRING'
