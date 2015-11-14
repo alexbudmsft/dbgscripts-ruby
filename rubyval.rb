@@ -92,6 +92,8 @@ class RubyVal
       RArray.new(rbasic)
     elsif t == 'RUBY_T_STRING'
       RString.new(rbasic)
+    elsif t == 'RUBY_T_IMEMO'
+      Memo.new(@val)
     else
       "not implemented"
     end
@@ -108,6 +110,17 @@ class RubyVal
     else
       val
     end
+  end
+end
+
+class Memo
+  def initialize(val)
+    @memo = DbgScript.create_typed_object(
+      "#{RUBYMOD}!MEMO", val)
+  end
+
+  def inspect
+    "#{DbgScript.get_nearest_sym(@memo.u3.func.value)}"
   end
 end
 

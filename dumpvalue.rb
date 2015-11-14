@@ -2,4 +2,6 @@
 #
 require_relative 'rubyval'
 
-p RubyVal.new(Integer(ARGV[1])).to_native
+rbval = RubyVal.new(Integer(ARGV[1]))
+puts "Type: #{rbval.type}"
+p rbval.to_native
