@@ -1,7 +1,7 @@
+require_relative 'config'
 require_relative 'rubyval'
 
-MOD = "rubyprov_lockdown"
-ST_TABLE_TYPE = "#{MOD}!st_table"
+ST_TABLE_TYPE = "#{RUBYMOD}!st_table"
 tbl = DbgScript.create_typed_object(ST_TABLE_TYPE, 0x000000000464b040)
 num_bins = tbl.num_bins.value
 
@@ -19,7 +19,8 @@ for i in 0...num_bins
     val = rbval.value
     puts "Raw VALUE: #{rec_val}, Type: #{rbval.type}, Value: #{val}"
     if val.class == RArray
-      puts val.size
+      puts "Array"
+      puts val.to_a
     end
     entry = entry.next
   end

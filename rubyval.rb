@@ -1,3 +1,5 @@
+require_relative 'config'
+
 # Class that wraps a Ruby VALUE.
 #
 class RubyVal
@@ -52,7 +54,7 @@ class RubyVal
   end
 
   def builtin_type
-    rbasic = DbgScript.create_typed_object('RBasic', @val)
+    rbasic = DbgScript.create_typed_object("#{RUBYMOD}!RBasic", @val)
     type = rbasic.flags.value & T_MASK
     return DbgScript.resolve_enum('ruby_value_type', type), rbasic
   end
@@ -91,18 +93,52 @@ end
 class RArray
   def initialize(rbasic)
     @rbasic = rbasic
+    @arr = DbgScript.create_typed_object(
+        "#{RUBYMOD}!RArray", @rbasic.address)
+  end
+
+  def embedded?
+    embed_flag = RubyVal.fl_user_mask(1)
+    @rbasic.flags.value & embed_flag != 0
   end
 
   def size
-    embed_flag = RubyVal.fl_user_mask(1)
     embed_len_mask = RubyVal.fl_user_mask(4) | RubyVal.fl_user_mask(3)
     embed_len_shift = RubyVal::FL_USHIFT + 3
     flags = @rbasic.flags.value
-    if flags & embed_flag != 0
+    if embedded?
       (flags & embed_len_mask) >> embed_len_shift
     else
-      arr = DbgScript.create_typed_object('RArray', @rbasic.address)
-      arr.as.heap.len.value
+      @arr.as.heap.len.value
     end
+  end
+
+  # Obtain a ptr to the array.
+  #
+  def ptr
+    if embedded?
+      @arr.as.ary
+    else
+      @arr.as.heap.ptr
+    end
+  end
+
+  # Generate a Ruby Array by cracking traversing the RArray.
+  #
+  def to_a
+    p = ptr
+    ary = []
+    for i in 0...size
+      # Each element is itself a Ruby VALUE.
+      #
+      val = RubyVal.new(p[i].value).value
+      # Recursively materialize nested arrays.
+      #
+      if val.class == RArray
+        val = val.to_a
+      end
+      ary << val
+    end
+    ary
   end
 end
