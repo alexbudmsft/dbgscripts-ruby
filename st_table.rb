@@ -14,9 +14,13 @@ for i in 0...num_bins
   entry = bin
   while entry.value != 0
     puts DbgScript.read_string(entry.key.value)
-    val = entry.record.value
-    rbval = RubyVal.new(val)
-    puts "Raw VALUE: #{val}, Type: #{rbval.type}, Value: #{rbval.value}"
+    rec_val = entry.record.value
+    rbval = RubyVal.new(rec_val)
+    val = rbval.value
+    puts "Raw VALUE: #{rec_val}, Type: #{rbval.type}, Value: #{val}"
+    if val.class == RArray
+      puts val.size
+    end
     entry = entry.next
   end
 end
